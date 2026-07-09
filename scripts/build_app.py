@@ -230,6 +230,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .kb-filter{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px}
 .kb-filter button{font-size:11px;padding:4px 10px;border-radius:12px;border:1px solid #d1d5db;background:#fff;cursor:pointer}
 .kb-filter button.active{background:#2563eb;color:#fff;border-color:#2563eb}
+.glossary-grid{display:flex;flex-wrap:wrap;gap:10px}
+.glossary-card{background:#fff;border-radius:10px;padding:12px 16px;box-shadow:0 1px 2px rgba(0,0,0,.06);cursor:pointer;flex:1 1 calc(50% - 5px);min-width:140px;max-width:calc(50% - 5px)}
+.glossary-card:active{opacity:.7}
+.glossary-card .gc-title{font-size:13px;font-weight:600;color:#1e40af;margin-bottom:4px}
+.glossary-card .gc-sub{font-size:10px;color:#9ca3af}
+.glossary-card .gc-preview{font-size:11px;color:#6b7280;margin-top:4px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+@media(min-width:600px){.glossary-card{flex:1 1 calc(33% - 7px);max-width:calc(33% - 7px)}}
+
 </style>
 </head>
 <body>
@@ -251,6 +259,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <div id="kb-content"></div>
 </div>
 
+<div class="page" id="page-kb-detail">
+<button class="back-btn" onclick="showPage('kb')">&larr; Back</button>
+<div class="detail" id="kb-detail-content"></div>
+</div>
+
+<div class="page" id="page-glossary">
+<div class="search-bar"><input type="text" id="glossary-search" placeholder="Search terms..." oninput="renderGlossary()"></div>
+<div id="glossary-grid"></div>
+</div>
+
+<div class="page" id="page-glossary-detail">
+<button class="back-btn" onclick="showPage('glossary')">&larr; Back</button>
+<div class="detail" id="glossary-detail-content"></div>
+</div>
+
 <div class="tab-bar">
 <button class="tab active" data-page="list" onclick="showPage('list')">
 <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
@@ -260,15 +283,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
 <span>Knowledge</span>
 </button>
-<button class="tab" data-page="list" onclick="showPage('list');document.getElementById('search').value='';renderList()">
-<svg viewBox="0 0 24 24" fill="currentColor"><path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"/></svg>
-<span>About</span>
+<button class="tab" data-page="glossary" onclick="showPage('glossary');renderGlossary()">
+<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+<span>Glossary</span>
 </button>
 </div>
 
 <script>
 var REPORTS = __REPORTS__;
 var KB = __KNOWLEDGE__;
+var GLOSSARY = __GLOSSARY__;
 var favs = JSON.parse(localStorage.getItem('aiweekly_favs') || '{}');
 
 function showPage(name){
@@ -280,6 +304,7 @@ function showPage(name){
   if(tab) tab.classList.add('active');
   if(name==='kb') renderKB('all');
   if(name==='list') renderList();
+  if(name==='glossary') renderGlossary();
 }
 
 function renderList(){
@@ -346,7 +371,7 @@ function renderKB(filter){
       REPORTS.forEach(function(r){
         if(r.body.indexOf(item.title)>=0) date = r.date;
       });
-      html += '<div class="knowledge-item">';
+      html += '<div class="knowledge-item" onclick="openKbDetail(''+item.title.replace(/'/g,'\'')+'')">';
       html += '<div class="ki-title">'+item.title+'</div>';
       html += '<div class="ki-what">'+(item.what||item.why||'').substring(0,150)+'</div>';
       html += '<div class="ki-meta">'+item.source+(date?' \u00b7 '+date:'')+'</div>';
@@ -385,13 +410,37 @@ def main():
         except Exception as e:
             print(f"  skip {f.name}: {e}")
 
+        # Generate glossary from knowledge items
+    glossary = []
+    seen_terms = set()
+    for k in all_knowledge:
+        term = k["title"]
+        # Simplify long titles
+        if "：" in term:
+            term = term.split("：")[0].split(":")[0].strip()
+        if len(term) > 50:
+            term = term[:47] + "..."
+        key = term.lower()
+        if key not in seen_terms:
+            seen_terms.add(key)
+            glossary.append({
+                "term": term,
+                "section": k.get("section", ""),
+                "sub": k.get("sub", ""),
+                "what": k.get("what", ""),
+                "why": k.get("why", ""),
+                "source": k.get("source", ""),
+                "link": k.get("link", ""),
+            })
+
     html = HTML_TPL.replace("__REPORTS__", json.dumps(reports, ensure_ascii=False))
     html = html.replace("__KNOWLEDGE__", json.dumps(all_knowledge, ensure_ascii=False))
+    html = html.replace("__GLOSSARY__", json.dumps(glossary, ensure_ascii=False))
 
     with open(out_path, "w", encoding="utf-8") as f:
         f.write(html)
 
-    print(f"App built: {out_path}  ({len(reports)} reports, {len(all_knowledge)} knowledge items)")
+    print(f"App built: {out_path}  ({len(reports)} reports, {len(all_knowledge)} knowledge, {len(glossary)} glossary terms)")
 
 
 if __name__ == "__main__":
