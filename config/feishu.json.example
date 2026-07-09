@@ -1,0 +1,5 @@
+{
+  "_comment": "飞书群机器人 Webhook 配置。在飞书群 → 设置 → 群机器人 → 添加自定义机器人 → 复制 Webhook URL",
+  "webhook_url": "https://open.feishu.cn/open-apis/bot/v2/hook/YOUR_WEBHOOK_TOKEN",
+  "enabled": true
+}

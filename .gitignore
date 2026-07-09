@@ -1,0 +1,19 @@
+# 飞书配置文件（含敏感 Webhook URL）
+config/feishu.json
+
+# 邮箱配置文件（含 SMTP 授权码）
+config/email.json
+
+# Python
+__pycache__/
+*.pyc
+
+# 临时抓取文件
+temp_*.md
+
+# 生成的 PDF（大文件，每次运行重新生成）
+weekly-reports/*.pdf
+
+# IDE
+.vscode/
+.idea/

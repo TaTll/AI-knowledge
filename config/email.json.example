@@ -1,0 +1,9 @@
+{
+  "_comment": "163 邮箱 SMTP 配置。需要先在 163 邮箱设置中开启 SMTP 服务获取授权码",
+  "smtp_server": "smtp.163.com",
+  "smtp_port": 465,
+  "sender": "your_email@163.com",
+  "password": "YOUR_SMTP_AUTH_CODE",
+  "receiver": "your_email@163.com",
+  "enabled": true
+}

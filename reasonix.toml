@@ -1,0 +1,2 @@
+[permissions]
+allow = ["Bash(pip show scrapling 2>&1 || echo \"NOT_INSTALLED\")", "install_skill", "Bash(pip show requests 2>&1 | head -3)"]
