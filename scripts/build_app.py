@@ -371,7 +371,7 @@ function renderKB(filter){
       REPORTS.forEach(function(r){
         if(r.body.indexOf(item.title)>=0) date = r.date;
       });
-      html += '<div class="knowledge-item" onclick="openKbDetail(''+item.title.replace(/'/g,'\'')+'')">';
+      html += '<div class="knowledge-item" data-title="'+item.title.replace(/"/g,'&quot;')+'">';
       html += '<div class="ki-title">'+item.title+'</div>';
       html += '<div class="ki-what">'+(item.what||item.why||'').substring(0,150)+'</div>';
       html += '<div class="ki-meta">'+item.source+(date?' \u00b7 '+date:'')+'</div>';
@@ -381,6 +381,72 @@ function renderKB(filter){
   });
   document.getElementById('kb-content').innerHTML = html || '<div class="card" style="text-align:center;color:#9ca3af;padding:40px">No knowledge entries yet</div>';
 }
+function openKbDetail(title){
+  var item = KB.find(function(k){return k.title===title});
+  if(!item) return;
+  var html = '<h4>'+item.title+'</h4>';
+  html += '<p style="color:#64748b;font-size:12px">'+item.section+(item.sub?' &rsaquo; '+item.sub:'')+'</p><hr>';
+  if(item.what) html += '<p><strong>What happened:</strong><br>'+item.what+'</p>';
+  if(item.why) html += '<p><strong>Why it matters:</strong><br>'+item.why+'</p>';
+  if(item.source) html += '<p style="font-size:12px;color:#9ca3af">Source: '+item.source+'</p>';
+  if(item.link) html += '<p style="font-size:12px"><a href="'+item.link+'" target="_blank">'+(item.link||'').substring(0,80)+'</a></p>';
+  document.getElementById('kb-detail-content').innerHTML = html;
+  showPage('kb-detail');
+  window.scrollTo(0,0);
+}
+
+function renderGlossary(){
+  var q = (document.getElementById('glossary-search')||{}).value||'';
+  q = q.toLowerCase();
+  var html = '<div class="glossary-grid">';
+  var seen = {};
+  GLOSSARY.forEach(function(g){
+    if(q && g.term.toLowerCase().indexOf(q)<0 && (g.section||'').toLowerCase().indexOf(q)<0) return;
+    if(seen[g.term]) return;
+    seen[g.term] = true;
+    var preview = (g.what||g.why||'').substring(0,60);
+    html += '<div class="glossary-card" data-term="'+g.term.replace(/"/g,'&quot;')+'">';
+    html += '<div class="gc-title">'+g.term+'</div>';
+    html += '<div class="gc-sub">'+g.section+'</div>';
+    html += '<div class="gc-preview">'+preview+'</div>';
+    html += '</div>';
+  });
+  html += '</div>';
+  if(Object.keys(seen).length===0) html = '<div class="card" style="text-align:center;color:#9ca3af;padding:40px">No terms found</div>';
+  document.getElementById('glossary-grid').innerHTML = html;
+}
+
+function openGlossaryDetail(term){
+  var items = GLOSSARY.filter(function(g){return g.term===term});
+  if(!items.length) return;
+  var html = '<h4>'+term+'</h4><hr>';
+  items.forEach(function(g){
+    if(g.what) html += '<p><strong>Explanation:</strong><br>'+g.what+'</p>';
+    if(g.why) html += '<p><strong>Significance:</strong><br>'+g.why+'</p>';
+    if(g.source) html += '<p style="font-size:12px;color:#9ca3af">Source: '+g.source+'</p>';
+    if(g.link) html += '<p style="font-size:12px"><a href="'+g.link+'" target="_blank">'+(g.link||'').substring(0,80)+'</a></p>';
+    html += '<hr>';
+  });
+  document.getElementById('glossary-detail-content').innerHTML = html;
+  showPage('glossary-detail');
+  window.scrollTo(0,0);
+}
+
+document.addEventListener('click', function(e){
+  var el = e.target.closest('.knowledge-item');
+  if(el){
+    var title = el.getAttribute('data-title');
+    if(title) openKbDetail(title);
+    return;
+  }
+  el = e.target.closest('.glossary-card');
+  if(el){
+    var term = el.getAttribute('data-term');
+    if(term) openGlossaryDetail(term);
+    return;
+  }
+});
+
 
 renderList();
 </script>
