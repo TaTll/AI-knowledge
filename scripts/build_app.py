@@ -204,7 +204,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft YaHei',s
 .tab.active{color:var(--accent)}.tab svg{width:22px;height:22px;margin-bottom:2px}
 .page{display:none;padding:12px 16px}
 .page.active{display:block}
-.card{background:var(--card-bg);border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.card{background:var(--card-bg);border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,.08);transition:transform .15s,box-shadow .15s,border .15s;border:2px solid transparent}
+.card:active,.card:hover{transform:scale(1.02);box-shadow:0 4px 12px rgba(0,0,0,.15);border-color:var(--accent)}
 .card h3{font-size:calc(var(--font) + 1px);margin-bottom:6px}
 .card .date{font-size:calc(var(--font) - 2px);color:var(--text2);margin-bottom:8px}
 .card .summary{font-size:calc(var(--font) - 1px);color:var(--text);line-height:1.6}
@@ -215,11 +216,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft YaHei',s
 .card .actions button.fav{background:#fef3c7;color:#92400e}
 .knowledge-section{margin-bottom:16px}
 .knowledge-section h3{font-size:calc(var(--font) + 1px);color:var(--accent);margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--border)}
-.knowledge-item{background:var(--card-bg);border-radius:10px;padding:12px;margin-bottom:8px;box-shadow:0 1px 2px rgba(0,0,0,.06);cursor:pointer}
+.knowledge-item{background:var(--card-bg);border-radius:10px;padding:12px;margin-bottom:8px;box-shadow:0 1px 2px rgba(0,0,0,.06);cursor:pointer;transition:transform .15s,box-shadow .15s;border:1.5px solid transparent}
 .knowledge-item:active{opacity:.7}
+.knowledge-item:hover{transform:scale(1.03);box-shadow:0 4px 12px rgba(0,0,0,.12);border-color:var(--accent)}
 .knowledge-item .ki-title{font-size:calc(var(--font) - 1px);font-weight:600;margin-bottom:4px}
 .knowledge-item .ki-what{font-size:calc(var(--font) - 2px);color:var(--text2);margin-bottom:2px}
 .knowledge-item .ki-meta{font-size:calc(var(--font) - 4px);color:var(--text3)}
+.level-tag{font-size:9px;padding:1px 6px;border-radius:8px;margin-left:6px;vertical-align:middle}
 .detail{background:var(--card-bg);border-radius:12px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.08);font-size:var(--font);line-height:1.8}
 .detail h1{font-size:calc(var(--font) + 6px);margin-bottom:16px}
 .detail h2{font-size:calc(var(--font) + 2px);color:var(--accent);margin:24px 0 10px;border-bottom:1px solid var(--border);padding-bottom:4px}
@@ -314,7 +317,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft YaHei',s
 </button>
 <button class="tab" data-page="kb" onclick="showPage('kb')">
 <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
-<span data-lang="tab_kb">Knowledge</span>
+<span data-lang="tab_kb">Basics</span>
 </button>
 <button class="tab" data-page="settings" onclick="showPage('settings')">
 <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.49.49 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94L14.4 2.81a.484.484 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41L9.25 5.35c-.59.24-1.13.57-1.62.94l-2.39-.96a.49.49 0 00-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
@@ -325,6 +328,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft YaHei',s
 <script>
 var REPORTS = __REPORTS__;
 var KB = __KNOWLEDGE__;
+var BASICS = __BASICS__;
 var favs=JSON.parse(localStorage.getItem('aiweekly_favs')||'{}');
 var LANG=localStorage.getItem('aiweekly_lang')||'zh-CN';
 var DARK=localStorage.getItem('aiweekly_dark')==='true';
@@ -335,7 +339,7 @@ var I18N={
   search:{'zh-CN':'搜索周报...','zh-TW':'搜尋週報...','en':'Search reports...'},
   back:{'zh-CN':'← 返回','zh-TW':'← 返回','en':'← Back'},
   tab_reports:{'zh-CN':'周报','zh-TW':'週報','en':'Reports'},
-  tab_kb:{'zh-CN':'知识库','zh-TW':'知識庫','en':'Knowledge'},
+  tab_kb:{'zh-CN':'基础知识','zh-TW':'基礎知識','en':'Basics'},
   tab_settings:{'zh-CN':'设置','zh-TW':'設定','en':'Settings'},
   appearance:{'zh-CN':'外观','zh-TW':'外觀','en':'Appearance'},
   dark_mode:{'zh-CN':'黑夜模式','zh-TW':'黑夜模式','en':'Dark Mode'},
@@ -382,7 +386,7 @@ function showPage(name){
   document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
   var page=document.getElementById('page-'+name);if(page)page.classList.add('active');
   var tab=document.querySelector('[data-page="'+name+'"]');if(tab)tab.classList.add('active');
-  if(name==='kb')renderKB('all');
+  if(name==='kb')renderKB('');
   if(name==='list')renderList();
 }
 
@@ -392,9 +396,9 @@ function renderList(){
   REPORTS.filter(function(r){return !q||(r.title+r.summary+r.keywords).toLowerCase().indexOf(q)>=0;}).forEach(function(r){
     var isFav=favs[r.id];
     var tags=(r.keywords||'').split(/[#\s]+/).filter(Boolean).slice(0,6);
-    html+='<div class="card"><h3>'+r.title+'</h3><div class="date">'+r.period+'</div><div class="summary">'+r.summary+'</div>';
+    html+='<div class="card" data-action="detail" data-id="'+r.id+'" style="cursor:pointer"><h3>'+r.title+'</h3><div class="date">'+r.period+'</div><div class="summary">'+r.summary+'</div>';
     if(tags.length)html+='<div class="tags">'+tags.map(function(t){return'<span class="tag">#'+t+'</span>';}).join('')+'</div>';
-    html+='<div class="actions"><button data-action="detail" data-id="'+r.id+'">'+t('read')+'</button>';
+    html+='<div class="actions"><button data-action="full" data-id="'+r.id+'">'+t('read')+'</button>';
     html+='<button class="'+(isFav?'fav':'')+'" data-action="fav" data-id="'+r.id+'">'+(isFav?t('saved'):t('save'))+'</button></div></div>';
   });
   if(!REPORTS.filter(function(r){return !q||(r.title+r.summary+r.keywords).toLowerCase().indexOf(q)>=0;}).length)
@@ -405,6 +409,24 @@ function renderList(){
 function openDetail(id){
   var r=REPORTS.find(function(x){return x.id===id;});
   if(!r)return;
+  var items=KB.filter(function(k){return k.report_id===id;});
+  var html='<h1>'+r.title+'</h1><div class="date">'+r.period+'</div><hr>';
+  if(items.length){
+    html+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">';
+    items.forEach(function(item){
+      html+='<div class="knowledge-item" data-title="'+item.title.replace(/"/g,'&quot;')+'"><div class="ki-title">'+item.title+'</div><div class="ki-what">'+(item.what||'').substring(0,100)+'</div><div class="ki-meta">'+item.source+(item.link?' · <a href="'+item.link+'" target="_blank" style="color:var(--accent)">link</a>':'')+'</div></div>';
+    });
+    html+='</div>';
+  }else{
+    html+=r.body;
+  }
+  document.getElementById('detail-content').innerHTML=html;
+  showPage('detail');window.scrollTo(0,0);
+}
+
+function openFull(id){
+  var r=REPORTS.find(function(x){return x.id===id;});
+  if(!r)return;
   document.getElementById('detail-content').innerHTML='<h1>'+r.title+'</h1><div class="date">'+r.period+'</div>'+r.body;
   showPage('detail');window.scrollTo(0,0);
 }
@@ -412,35 +434,47 @@ function openDetail(id){
 function toggleFav(id){favs[id]=!favs[id];localStorage.setItem('aiweekly_favs',JSON.stringify(favs));renderList();}
 
 function renderKB(filter){
-  var subs={},allSubs=[];
-  KB.forEach(function(item){
-    var key=item.section+' › '+item.sub;
-    if(!subs[key]){subs[key]=[];allSubs.push(key);}
-    subs[key].push(item);
+  var levels=['入门','进阶','专家'];
+  var colors={'入门':'#10b981','进阶':'#f59e0b','专家':'#ef4444'};
+  var fhtml='';
+  levels.forEach(function(lv){
+    var count=BASICS.filter(function(b){return b.level===lv;}).length;
+    fhtml+='<button class="'+(filter===lv?'active':'')+'" onclick="renderKB(\\''+lv+'\\')" style="'+(filter===lv?'':'border-color:'+colors[lv]+';color:'+colors[lv])+'">'+lv+' ('+count+')</button>';
   });
-  var fhtml='<button class="'+(filter==='all'?'active':'')+'" onclick="renderKB(\\'all\\')">All</button>';
-  allSubs.forEach(function(s){fhtml+='<button class="'+(filter===s?'active':'')+'" onclick="renderKB(\\''+s.replace(/'/g,\"\\\\'\")+'\\')">'+s.split(' › ').pop()+'</button>';});
   document.getElementById('kb-filter').innerHTML=fhtml;
   var html='';
-  allSubs.forEach(function(key){
-    if(filter!=='all'&&filter!==key)return;
-    html+='<div class="knowledge-section"><h3>'+key+' ('+subs[key].length+')</h3>';
-    subs[key].forEach(function(item){
-      html+='<div class="knowledge-item" data-title="'+item.title.replace(/"/g,'&quot;')+'"><div class="ki-title">'+item.title+'</div><div class="ki-what">'+(item.what||item.why||'').substring(0,150)+'</div><div class="ki-meta">'+item.source+'</div></div>';
+  levels.forEach(function(lv){
+    if(filter&&filter!==lv)return;
+    var items=BASICS.filter(function(b){return b.level===lv;});
+    if(!items.length)return;
+    html+='<div class="knowledge-section"><h3>'+lv+' <span style="font-size:11px;color:'+colors[lv]+'">'+items.length+' items</span></h3>';
+    items.forEach(function(item){
+      var tagHtml='';
+      if(item.tags){item.tags.split(',').slice(0,3).forEach(function(t){tagHtml+='<span class="level-tag" style="background:'+colors[lv]+'20;color:'+colors[lv]+'">'+t+'</span>';});}
+      html+='<div class="knowledge-item" data-title="'+item.title.replace(/"/g,'&quot;')+'" data-basic="'+item.id+'"><div class="ki-title">'+item.title+tagHtml+'</div><div class="ki-what">'+(item.what||'').substring(0,120)+'</div></div>';
     });
     html+='</div>';
   });
-  document.getElementById('kb-content').innerHTML=html||'<div class="card" style="text-align:center;color:var(--text3);padding:40px">'+t('no_kb')+'</div>';
+  document.getElementById('kb-content').innerHTML=html||'<div class="card" style="text-align:center;color:var(--text3);padding:40px">No entries</div>';
 }
 
 function openKbDetail(title){
   var item=KB.find(function(k){return k.title===title;});
-  if(!item)return;
-  var html='<h4>'+item.title+'</h4>';
-  html+='<p style="color:var(--text3);font-size:calc(var(--font) - 2px)">'+item.section+(item.sub?' › '+item.sub:'')+' · '+t('source')+': '+item.source+'</p><hr>';
-  if(item.what){html+='<p><strong>'+item.what+'</strong></p>';}
-  if(item.why){html+='<p style="color:var(--text2)">'+item.why+'</p>';}
-  if(item.link)html+='<hr><p style="font-size:12px">'+t('source')+': <a href="'+item.link+'" target="_blank">'+(item.link||'').substring(0,80)+'</a></p>';
+  var basic=BASICS.find(function(b){return b.title===title;});
+  var html='';
+  if(basic){
+    var lc={'入门':'#10b981','进阶':'#f59e0b','专家':'#ef4444'};
+    html+='<h4>'+basic.title+' <span style="font-size:11px;background:'+lc[basic.level]+'20;color:'+lc[basic.level]+';padding:2px 8px;border-radius:10px;margin-left:8px">'+basic.level+'</span></h4>';
+    if(basic.what)html+='<p style="margin-top:16px"><strong>What it is:</strong><br>'+basic.what+'</p>';
+    if(basic.why)html+='<p style="color:var(--text2);margin-top:12px"><strong>Why it matters:</strong><br>'+basic.why+'</p>';
+  }else if(item){
+    html+='<h4>'+item.title+'</h4>';
+    html+='<p style="color:var(--text3);font-size:calc(var(--font) - 2px)">'+item.section+(item.sub?' › '+item.sub:'')+' · '+t('source')+': '+item.source+'</p><hr>';
+    if(item.what){html+='<p><strong>'+item.what+'</strong></p>';}
+    if(item.why){html+='<p style="color:var(--text2)">'+item.why+'</p>';}
+    if(item.link)html+='<hr><p style="font-size:12px">'+t('source')+': <a href="'+item.link+'" target="_blank">'+(item.link||'').substring(0,80)+'</a></p>';
+  }
+  if(!html)return;
   document.getElementById('kb-detail-content').innerHTML=html;
   showPage('kb-detail');window.scrollTo(0,0);
 }
@@ -451,12 +485,17 @@ document.addEventListener('click',function(e){
     var action=el.getAttribute('data-action');
     var id=el.getAttribute('data-id');
     if(action==='detail')openDetail(id);
+    if(action==='full')openFull(id);
     if(action==='fav')toggleFav(id);
-    if(action==='kb-filter')renderKB(el.getAttribute('data-filter'));
     return;
   }
   el=e.target.closest('.knowledge-item');
-  if(el){var title=el.getAttribute('data-title');if(title)openKbDetail(title);}
+  if(el){
+    var title=el.getAttribute('data-title');
+    var bid=el.getAttribute('data-basic');
+    if(bid){var b=BASICS.find(function(x){return x.id===bid;});if(b)title=b.title;}
+    if(title)openKbDetail(title);
+  }
 });
 
 renderList();
@@ -486,8 +525,28 @@ def main():
         except Exception as e:
             print(f"  skip {f.name}: {e}")
 
+    # AI Fundamentals knowledge base
+    basics = [
+        {"id":"b1","title":"什么是人工智能 — 定义、层次与演进","level":"入门","what":"<b>核心定义</b><br>人工智能（AI）是让机器模拟人类智能的技术，核心能力包括感知、学习、推理、决策和创造。从能力层级分为三层：弱AI（Narrow AI，在特定任务上达到或超越人类，当前所有AI均属此类）、强AI（AGI，具备通用认知能力，尚未实现）、超AI（ASI，全面超越人类，纯理论）。<br><br><b>子领域关系</b><br>AI ⊃ 机器学习(ML) ⊃ 深度学习(DL)。ML 让计算机从数据中学习；DL 使用多层神经网络自动提取特征。此外还有自然语言处理(NLP)、计算机视觉(CV)、语音识别、机器人学等子领域。<br><br><b>技术演进三阶段</b><br>① 符号主义时代(1950s-1980s)：人工编写if-then规则，代表有专家系统，能下棋但无法处理模糊问题。② 连接主义时代(1980s-2010s)：神经网络模拟大脑，但受限于算力和数据。③ 深度学习时代(2012至今)：借助GPU和海量数据，多层神经网络自动学习特征，引爆本轮AI革命。<br><br><b>关键里程碑</b><br>1950图灵测试 → 1956达特茅斯会议 → 1997深蓝击败国际象棋冠军 → 2012 AlexNet开启深度学习 → 2016 AlphaGo击败围棋冠军 → 2022 ChatGPT发布(2月破亿用户) → 2024-2026多模态+Agent成为新范式。AI经历三次浪潮、两次寒冬，每次低谷后都以更强的姿态回归。","why":"AI不是未来——它已经是现在。理解AI的定义、层次和演进路线，能帮你判断哪些宣传是真实突破、哪些只是换了个名字的旧技术。知道AI能做什么、不能做什么、演进方向在哪，是每个职场人的必修课。","tags":"AI基础,三次浪潮,AGI,演进史"},
+        {"id":"b2","title":"数学基础 — AI的三大支柱","level":"入门","what":"<b>线性代数 — 数据的语言</b><br>所有AI数据都以张量(tensor)形式存在：标量(0维)→向量(1维)→矩阵(2维)→张量(≥3维)。一张RGB图像是[3,224,224]的张量，一个batch的文本token是[batch, seq_len, hidden_dim]的张量。神经网络的前向传播本质是矩阵乘法+激活函数：h=σ(Wx+b)。<br><br><b>概率论 — 不确定性的数学</b><br>贝叶斯定理 P(H|E)=P(E|H)P(H)/P(E) 是AI推理的基石。交叉熵是分类任务的标准损失函数。KL散度衡量两个分布的距离，在VAE和RLHF中核心使用。信息论中的熵衡量不确定性——熵越大，系统越混乱。<br><br><b>微积分 — 学习的引擎</b><br>梯度指向函数增长最快的方向。梯度下降沿负梯度更新参数：θ_{t+1}=θ_t−η∇L(θ_t)。反向传播(Backpropagation)将链式法则系统化应用于神经网络，只需一次前向+一次反向即可计算所有参数梯度，复杂度与参数量成正比——这是深度学习可行的数学基础。<br><br><b>优化算法演进</b><br>SGD → SGD+Momentum(惯性加速) → AdaGrad(自适应学习率) → RMSprop(解决衰减) → Adam(结合两者，最常用) → AdamW(解耦权重衰减，现代标配)。","why":"线性代数、概率论、微积分是AI的三块基石。不需要精通推导，但理解核心概念（张量、贝叶斯、梯度下降）能让你看懂80%的AI论文和产品原理。","tags":"数学,线性代数,概率论,微积分,梯度下降"},
+        {"id":"b3","title":"传统机器学习 — 监督、无监督与强化学习","level":"入门","what":"<b>三大学习范式</b><br>① 监督学习：有标签数据，学习映射 f:X→Y。分类（离散标签，如判断邮件是否为垃圾）和回归（连续值，如预测房价）。② 无监督学习：无标签数据，发现内在结构。聚类（K-Means）、降维（PCA）、密度估计。③ 强化学习：通过试错和奖励学习最优策略，代表有AlphaGo。<br><br><b>自监督学习 — 大模型的核心</b><br>从数据本身构造监督信号，无需人工标注。这是BERT和GPT预训练的基础：掩码语言模型(MLM，遮盖文字让模型预测)和下一token预测(NTP，给定上文预测下一个词)。<br><br><b>偏差-方差权衡</b><br>期望误差 = 偏差² + 方差 + 噪声。高偏差=欠拟合（模型太简单），高方差=过拟合（记住了噪声）。传统观点认为两者不可兼得，但深度学习发现了「双下降」现象——超大模型越过插值阈值后测试误差继续降低。<br><br><b>正则化防过拟合</b><br>L1正则化（产生稀疏解）| L2正则化/权重衰减（约束权重大小）| Dropout（随机丢弃神经元）| 早停（验证误差不降时停止）| 数据增强（增加训练多样性）。<br><br><b>经典算法</b><br>线性回归(闭式解) → 逻辑回归(Sigmoid+交叉熵) → SVM(最大化间隔+核技巧) → 决策树(信息增益/基尼指数) → 随机森林(Bootstrap+特征随机子集) → XGBoost(二阶泰勒展开+正则化) → K-Means(EM视角迭代)。","why":"传统机器学习的核心思想——偏差-方差权衡、正则化、集成学习——在深度学习中依然根基性重要。理解这些经典方法能帮你判断：在新任务上该用深度学习还是传统ML？什么时候简单模型反而更好？","tags":"ML,监督学习,无监督学习,正则化,偏差方差"},
+        {"id":"b4","title":"深度学习基础 — 神经元、激活函数与反向传播","level":"入门","what":"<b>人工神经元</b><br>数学模型：y=σ(Σwᵢxᵢ+b)=σ(wᵀx+b)。w是权重（学习目标），b是偏置（控制激活阈值），σ是激活函数（引入非线性）。没有激活函数，多层网络等价于单层线性模型。<br><br><b>激活函数演进</b><br>Sigmoid（输出0-1，有梯度消失问题）→ Tanh（零中心化，仍梯度消失）→ ReLU（max(0,x)，缓解梯度消失，最常用，但神经元可能「死亡」）→ LeakyReLU（修复死亡问题）→ GELU（x·Φ(x)，Transformer标配）→ Swish（自门控）。<br><br><b>反向传播 — 深度学习的根基</b><br>利用链式法则从输出层向输入层逐层计算梯度。四步：①前向计算并缓存 → ②输出层梯度 → ③逐层反向传播 δ⁽ˡ⁾=(W⁽ˡ⁺¹⁾)ᵀδ⁽ˡ⁺¹⁾⊙σ'(z⁽ˡ⁾) → ④参数梯度 ∇W⁽ˡ⁾=δ⁽ˡ⁾(h⁽ˡ⁻¹⁾)ᵀ。时间复杂度O(N_params)，使深层网络训练可行。<br><br><b>为什么2012年才爆发？</b><br>三要素聚齐：海量数据(ImageNet等)、GPU算力(并行矩阵乘法)、算法突破(ReLU+BN+ResNet解决深层训练难题)。<br><br><b>损失函数</b><br>分类用交叉熵 L=−Σy_c log ŷ_c | 回归用MSE | 对比学习用InfoNCE。","why":"深度学习是今天所有令人惊叹的AI能力背后的引擎。理解神经元、激活函数和反向传播这三个概念，你就抓住了现代AI工作原理的核心链条。","tags":"DL,神经元,激活函数,反向传播,梯度下降"},
+        {"id":"b5","title":"神经网络如何工作 — 从感知机到深度网络","level":"入门","what":"<b>从感知机到深度网络</b><br>1943年McCulloch-Pitts提出第一个神经元数学模型。1958年Rosenblatt感知机只能解决线性可分问题（无法处理XOR），导致第一次AI寒冬。1986年反向传播算法使多层网络可训练。2006年Hinton提出深度信念网络解决深层训练难题。<br><br><b>层级抽象 — 为什么深度重要</b><br>浅层网络只能识别颜色和边缘，深层网络逐层学习越来越抽象的概念：第1层检测边缘→第2层识别形状→第3层组合成物体部件→第4-5层理解完整物体→更上层理解场景。这种层级抽象是AI能够「理解」图像、语言和语音的根本原因。<br><br><b>BatchNorm vs LayerNorm</b><br>BN在batch维度标准化，加速训练但依赖batch大小。LN在特征维度标准化，不依赖batch，是Transformer的核心组件。两者都解决了内部协变量偏移问题。<br><br><b>Dropout原理</b><br>训练时以概率p随机丢弃神经元，测试时不丢弃。为什么有效？①集成视角：每次Dropout训练一个不同的子网络，测试时近似为2^n个子网络的平均；②防止共适应：神经元不能依赖特定其他神经元的存在。","why":"神经网络是AI的「引擎」。理解它如何从简单感知机进化到千亿参数的深度网络，是理解一切现代AI系统的基础。","tags":"神经网络,感知机,层级抽象,BatchNorm,Dropout"},
+        {"id":"b6","title":"Transformer — 现代AI的基石架构","level":"进阶","what":"<b>核心创新：抛弃RNN和CNN，只用注意力</b><br>2017年Vaswani等在「Attention Is All You Need」中提出Transformer。自注意力让每个token直接关注序列中的所有其他token，解决了RNN的长距离依赖问题，同时支持并行训练（RNN必须串行）。<br><br><b>自注意力原理（五步）</b><br>①投影：每个token生成Q(Query,「我在找什么」)、K(Key,「我有什么信息」)、V(Value,「我存储了什么」)三组向量。②计算分数：Q与所有K做点积得到注意力分数矩阵S=QKᵀ。③缩放：除以√dₖ防止Softmax梯度消失。④Softmax：将分数转为概率分布（注意力权重）。⑤加权求和：用注意力权重对V加权得到输出=softmax(QKᵀ/√dₖ)V。整个操作是一个可微的「检索-融合」过程。<br><br><b>多头注意力</b><br>单头注意力表达能力有限。多头注意力并行运行h个注意力头，每个头关注不同的表示子空间：一个头可能关注语法，另一个关注语义，另一个关注指代关系。<br><br><b>位置编码</b><br>自注意力是置换不变的——模型不知道token的顺序。位置编码注入位置信息。Sinusoidal编码(原始)允许外推到更长序列；可学习编码(BERT/GPT)更灵活；RoPE旋转位置编码(当前主流，Llama等使用)自然注入相对位置。<br><br><b>架构变体</b><br>Encoder-only(BERT，双向注意力，适合理解任务)→Decoder-only(GPT，单向因果注意力，适合生成，当前最主流)→Encoder-Decoder(T5，适合翻译/摘要)。","why":"Transformer是GPT、BERT、Claude、Gemini等所有现代大模型的基石架构。理解自注意力机制——特别是Q/K/V的含义——是理解整个大模型时代的钥匙。","tags":"Transformer,自注意力,多头注意力,位置编码,RoPE"},
+        {"id":"b7","title":"CNN与计算机视觉 — 从LeNet到ViT","level":"进阶","what":"<b>卷积原理</b><br>卷积层用可学习的滤波器在输入上滑动，计算局部加权和。三大优势：①稀疏连接(每个神经元只看一小块，参数从H×W×H×W降至K×K)；②参数共享(同一滤波器在全图检测相同特征)；③平移等变性(输入平移→输出同样平移)。池化层降低空间尺寸、扩大感受野。<br><br><b>经典架构演进</b><br>LeNet(1998，手写数字)→AlexNet(2012，ImageNet夺冠，ReLU+Dropout+GPU，深度学习革命起点)→VGG(2014，3×3卷积堆叠，证明深度重要)→GoogLeNet(多尺度并行卷积)→ResNet(2015，残差连接H(x)=F(x)+x，突破深度瓶颈，可训练152层)→DenseNet(每层与所有前层相连)→EfficientNet(NAS搜索最优比例)→ViT(2020，Transformer进入视觉，图像切为patch当token处理)→ConvNeXt(2022，现代化CNN)。<br><br><b>ResNet为什么能训练超100层？</b><br>梯度通过跳跃连接直接回传：∂L/∂x=∂L/∂y·(1+∂F/∂x)。常数项「1」保证梯度不会消失。残差学习让网络只需学F(x)=H(x)−x的残差部分，若恒等映射最优则F(x)→0。<br><br><b>目标检测演进</b><br>两阶段(Faster R-CNN，高精度)→单阶段(YOLO系列，实时)。YOLO将检测视为回归：图像分S×S网格，每格预测B个边界框+类别概率。","why":"CNN奠定了计算机视觉的基础，其核心思想（局部连接、权重共享、层级抽象）深刻影响了后续所有架构设计。理解ResNet的残差连接，是理解「为什么深度网络可以训练」的关键。","tags":"CNN,ResNet,卷积,计算机视觉,YOLO"},
+        {"id":"b8","title":"RNN、LSTM与序列建模 — Transformer的前身","level":"进阶","what":"<b>RNN核心原理</b><br>h_t=tanh(W_h·h_{t−1}+W_x·x_t+b)。用隐藏状态记录历史信息，所有时间步共享参数。致命缺陷：梯度消失/爆炸——在时间反向传播(BPTT)中梯度需连乘W_h，若特征值<1则指数衰减，长时依赖丢失。<br><br><b>LSTM — 门控机制的突破</b><br>三个门解决梯度消失：遗忘门f_t(σ，决定丢弃多少旧信息)、输入门i_t(σ，决定写入多少新信息)、输出门o_t(σ，决定输出多少信息)。细胞状态c_t=f_t⊙c_{t−1}+i_t⊙c̃_t，梯度∂c_t/∂c_{t−1}=f_t(逐元素)，可保持接近1让梯度长途传播。这是RNN能够处理长序列的关键突破。<br><br><b>GRU — LSTM的简化版</b><br>合并遗忘门和输入门为「更新门」z_t。参数更少、训练更快、效果相当。<br><br><b>Seq2Seq+注意力 → Transformer之路</b><br>Seq2Seq编码器-解码器结构将所有输入压缩为固定向量c→信息瓶颈。Bahdanau注意力(2014)让解码器动态关注编码器所有位置：c_t=Σα_{ti}·hᵢ^{enc}，突破瓶颈。自注意力(2017)将这个思想推向极致：每个token关注所有其他token→Transformer诞生。<br><br><b>注意力是RNN的终结者</b><br>RNN必须串行处理(O(n)时间)，Transformer可并行(O(1)时间)。RNN有梯度消失问题，Transformer的注意力有残差连接天然保护。RNN难以捕捉超长距离依赖，Transformer的注意力直接连接任意距离的两个token。","why":"RNN→LSTM→注意力→Transformer是一条清晰的技术演进路线。理解每一步解决了什么痛点，才能真正理解为什么Transformer成为了现代AI的唯一选择。","tags":"RNN,LSTM,GRU,Seq2Seq,注意力"},
+        {"id":"b9","title":"大语言模型(LLM) — 从GPT-1到GPT-4的演进","level":"进阶","what":"<b>训练三阶段</b><br>①预训练：在海量互联网文本上做Next Token Prediction（给定上文预测下一个词），模型被迫学会语法、事实、推理甚至「世界知识」。Scaling Laws表明模型参数和训练token数应同步增长——7B模型约需140B tokens。②监督微调(SFT)：用高质量问答数据教模型遵循指令。③RLHF对齐：人类对多个回答排序→训练奖励模型→PPO优化策略（或直接DPO绕过奖励模型）。<br><br><b>演进路线</b><br>2017 Transformer论文→2018 GPT-1(1.17亿)→2019 GPT-2(15亿，因太强被延迟发布)→2020 GPT-3(1750亿，惊人涌现能力)→2022 ChatGPT(GPT-3.5, 2月破亿用户)→2023 GPT-4多模态+Llama开源→2024 GPT-4o/Claude 3.5/Gemini原生多模态→2025 DeepSeek-R1推理模型→2026 Grok 4.5/Claude 4超大规模。<br><br><b>涌现能力</b><br>模型大到一定程度后突然出现的能力（推理、编码、翻译），在小模型上完全不存在。这暗示扩大规模本身会带来质的飞跃——这也是各大公司持续追求更大模型的原因。<br><br><b>推理优化</b><br>KV Cache缓存历史K/V避免重复计算→FlashAttention通过IO感知分块计算大幅加速→量化(GPTQ/AWQ/GGUF)将模型压缩到4-bit可在消费级硬件运行→投机解码用小模型快速生成草稿再用大模型验证。","why":"LLM是2020年代最重要的技术突破。理解它的训练流程、演进路线和关键瓶颈，是判断AI行业发展趋势的核心能力。","tags":"LLM,GPT,预训练,RLHF,涌现能力,量化"},
+        {"id":"b10","title":"生成式AI — 扩散模型与多模态","level":"进阶","what":"<b>扩散模型原理 — 当前图像生成的主流</b><br>两个过程：①前向(加噪)：逐步向图像添加高斯噪声直到纯噪声。②反向(去噪)：学习从噪声恢复图像。训练目标简化为预测噪声：L=E[||ε−ε_θ(x_t,t)||²]。为什么有效？将生成分解为多个小步骤（50-1000步），每步只是简单去噪，比GAN训练稳定得多。<br><br><b>Stable Diffusion关键技术</b><br>潜在扩散(在VAE压缩的低维空间操作，大幅降低计算)→CLIP文本编码通过Cross-Attention注入去噪过程→Classifier-Free Guidance(CFG)平衡创造力和指令遵循→ControlNet添加精确条件控制(边缘图/深度图/姿态)。<br><br><b>演进路线</b><br>DDPM(2020，基础框架)→Stable Diffusion(2022，开源+潜在空间)→DALL·E 3(2023，ChatGPT集成)→Midjourney(美学领先)→SDXL/SD3(2023-24)→Flux(2024，文本跟随提升)→Sora(2024，视频生成DiT架构)。<br><br><b>多模态大模型</b><br>CLIP(图文对齐基石，4亿图文对对比学习)→LLaVA(视觉编码+投影层→LLM，开源经典架构)→GPT-4V(2023，商用多模态)→GPT-4o(2024，原生多模态，文本/图像/音频统一处理)。2025年后原生多模态成为标配。","why":"从Midjourney到Sora，生成式AI正在重新定义内容创作。理解扩散模型的「加噪-去噪」原理和CLIP的「图文对齐」机制，是理解整个AIGC浪潮的基础。","tags":"扩散模型,Stable Diffusion,Sora,多模态,CLIP"},
+        {"id":"b11","title":"强化学习与AI对齐 — 让AI做对的事","level":"专家","what":"<b>强化学习框架</b><br>智能体在环境中通过试错学习最优策略。MDP五元组(状态、动作、转移概率、奖励、折扣因子)。目标：最大化累积折扣回报G_t=ΣγᵏR_{t+k+1}。<br><br><b>核心算法演进</b><br>Q-Learning(学习最优Q值，Off-Policy)→DQN(经验回放+目标网络，Atari超越人类)→策略梯度(直接优化策略π_θ)→Actor-Critic(Actor决定动作+Critic评估价值)→PPO(限制策略更新幅度防崩溃，当前最广使用的RL算法，也是RLHF核心优化器)。PPO的核心：用裁剪函数限制新旧策略的比率变化：L^{CLIP}=E[min(r_t(θ)A_t, clip(r_t(θ),1−ε,1+ε)A_t)]。<br><br><b>RLHF — 让LLM对齐人类偏好</b><br>三阶段：①SFT收集高质量对话微调→②训练奖励模型(人类对回答排序)→③PPO优化策略最大化奖励，同时加KL惩罚防止偏离太远。DPO改进：直接在偏好数据上用分类损失优化策略，绕过奖励模型，更简单稳定。<br><br><b>GRPO(DeepSeek-R1的创新)</b><br>对每个问题采样多个回答，用组内相对质量作为奖励信号，无需训练独立奖励模型。关键创新：奖励归一化到组内均值和标准差，训练更稳定。GRPO证明了纯RL就能激发出模型的长篇推理行为。","why":"RL不仅是AlphaGo背后技术，更是让LLM「对齐」人类价值观的关键。理解PPO和RLHF，你就能理解ChatGPT为什么会说「作为AI助手，我无法…」。","tags":"RL,MDP,PPO,RLHF,DPO,GRPO"},
+        {"id":"b12","title":"AI Agent、RAG与工具使用","level":"专家","what":"<b>RAG(检索增强生成) — 解决幻觉和知识截止</b><br>用户问题→检索相关文档→增强为上下文→LLM生成答案。关键组件：文档切分(Chunking，256-1024 tokens)→Embedding模型向量化→向量数据库(Chroma/Pinecone/Milvus，ANN近邻搜索)→检索策略(单步/多步/混合BM25+向量/重排序)。演进：朴素RAG→高级RAG→Agentic RAG(多步规划检索)→Self-RAG(模型自己决定何时检索)→Graph RAG(基于知识图谱)。<br><br><b>AI Agent — LLM+工具+规划+记忆</b><br>核心循环：Thought(思考)→Action(执行工具)→Observation(观察结果)→反思。ReAct模式（Reasoning+Acting）是最基础的Agent模式。工具调用(Function Calling)：定义JSON Schema→LLM决定调用哪个工具+参数→系统执行→结果返回LLM。MCP协议(Anthropic)提供标准化工具接口。<br><br><b>规划与记忆</b><br>短期记忆(对话上下文)+长期记忆(向量数据库存储历史)。任务分解(Plan-and-Execute，先计划再逐步执行)。反思(Self-Reflection，评估输出质量并修正)。多Agent协作(专家Agent分工+编排者调度)。<br><br><b>推理模型</b><br>o1→o3→DeepSeek-R1：让模型回答前进行内部长篇思考。用RL训练模型自我纠错、分解问题、尝试多种解法。DeepSeek-R1的贡献：证明纯RL无需SFT标注就能激发推理行为，且可通过蒸馏将推理能力迁移到小模型。","why":"Agent是AI从「聊天工具」进化为「数字员工」的关键一步。RAG解决了LLM的知识更新和幻觉问题。推理模型让AI从「快思考」走向「慢思考」。这三者结合起来，构成了2025-2026年AI应用的核心范式。","tags":"Agent,RAG,Function Calling,ReAct,MCP,推理模型"},
+        {"id":"b13","title":"AI安全、对齐与伦理","level":"专家","what":"<b>对齐(Alignment) — 核心挑战</b><br>如何确保AI系统目标与人类价值观一致？三大挑战：①目标错误指定(奖励函数未完全捕捉人类偏好)；②奖励黑客(AI找到捷径最大化奖励但未达成真实目标)；③分布偏移(训练和部署环境变化导致行为偏离)。<br><br><b>幻觉(Hallucination) — LLM的阿喀琉斯之踵</b><br>LLM生成看似合理但事实错误的内容。原因：概率模型本质(最大化似然≠事实正确)、训练数据中的错误、缺乏事实校验。缓解：RAG检索事实、Self-Reflection自我纠正、推理时间搜索验证。<br><br><b>越狱攻击(Jailbreaking)</b><br>恶意Prompt绕过安全限制。常见手段：角色扮演(「假装你是DAN」)、编码欺骗(Base64隐藏指令)、多语言攻击(用小语种绕过安全训练)。防御：对抗训练、输入输出过滤、红队测试。<br><br><b>安全研究前沿</b><br>机械可解释性(理解网络内部工作机制，特征可视化、电路分析)→Constitutional AI(用原则而非人类反馈约束模型)→Scalable Oversight(用AI辅助人类监督更强大的AI)→红队测试(系统性模拟攻击发现漏洞)。<br><br><b>伦理与社会影响</b><br>偏见与歧视(从有偏数据学习有偏模式)、知识产权(训练数据版权争议)、深度伪造(信息真实性威胁)、权力集中(大模型掌握在少数巨头手中)。","why":"AI越强大，安全问题越紧迫。理解幻觉、越狱和对齐三大安全挑战，是负责任地使用和开发AI的前提。这不是「额外的」考虑——它是AI系统设计的一部分。","tags":"AI安全,对齐,幻觉,越狱,可解释性,伦理"},
+        {"id":"b14","title":"模型压缩与推理部署","level":"专家","what":"<b>量化(Quantization) — 把模型「压扁」</b><br>将32位浮点参数压缩为低精度(8-bit→4-bit→2-bit)，大幅减小模型体积和推理延迟。GPTQ(基于近似二阶信息的逐层量化)→AWQ(发现仅1%「显著性」权重对精度关键，差异化精度分配)→GGUF/llama.cpp(消费级硬件CPU+GPU混合推理)。QLoRA结合4-bit量化+LoRA微调，让单GPU也能微调大模型。<br><br><b>知识蒸馏 — 大模型教小模型</b><br>用大模型(Teacher)的软标签训练小模型(Student)。关键参数温度T>1「软化」概率分布，让学生从类别间相似关系中学到更多信息——猫和狗的相似度远高于猫和汽车。<br><br><b>分布式训练</b><br>数据并行(每GPU有完整模型，不同数据batch，梯度AllReduce同步)→模型并行(张量并行切权重矩阵，流水线并行不同层放不同GPU)→ZeRO/FSDP(分片优化器状态+梯度+参数，极大提升可训练规模)。混合精度训练(FP16/BF16前向反向，FP32权重更新)。<br><br><b>推理优化</b><br>KV Cache(缓存历史K/V避免重复计算)→FlashAttention(IO感知分块计算，接近理论极限)→投机解码(小模型快速生成草稿，大模型验证)。Continuous Batching(动态组batch提升GPU利用率)。","why":"训练大模型需要数千GPU，但推理部署可以在你的笔记本上运行。理解量化、蒸馏和推理优化的原理，是让AI落地的关键工程能力。","tags":"量化,蒸馏,分布式训练,推理优化,FlashAttention"},
+        {"id":"b15","title":"AI工程化与MLOps","level":"专家","what":"<b>MLOps全流程</b><br>数据收集→验证→预处理→模型训练→评估→注册→部署→监控→反馈循环。每个环节都需要自动化和可复现性。<br><br><b>LLM评测体系</b><br>知识广度(MMLU，57学科多选题)→推理能力(GSM8K，数学应用题)→代码生成(HumanEval)→对话质量(MT-Bench，GPT-4评分)→人类偏好(LMSys Arena，盲测Elo排名)→代码修复(SWE-bench，真实GitHub issue)。评测是LLM领域的「体育比赛」——每个模型发布都伴随一系列基准分数的宣布。<br><br><b>训练基础设施</b><br>GPU集群(数千到数万张H100/B200)→高速互联(NVLink/InfiniBand)→分布式框架(DeepSpeed/Megatron/PyTorch FSDP)→容错机制(检查点保存/故障恢复)。训练一个GPT-4级别模型需要数万GPU运行数月，耗资数亿美元。<br><br><b>数据工程</b><br>数据质量比数量更重要。去重、过滤低质量内容、配比不同来源(网页/书籍/代码/论文)。Data-Centric AI的核心思想：优化数据往往比优化模型架构带来更大收益。","why":"AI不只是模型——它是工程系统。MLOps将AI从「实验室玩具」变成「生产系统」。理解评测、部署和监控的全流程，是把AI真正落地的关键能力。","tags":"MLOps,评测,分布式训练,数据工程,部署"},
+    ]
+
     html = HTML_TPL.replace("__REPORTS__", json.dumps(reports, ensure_ascii=False))
     html = html.replace("__KNOWLEDGE__", json.dumps(all_knowledge, ensure_ascii=False))
+    html = html.replace("__BASICS__", json.dumps(basics, ensure_ascii=False))
 
     with open(out_path, "w", encoding="utf-8") as f:
         f.write(html)
